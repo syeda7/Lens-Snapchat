@@ -187,6 +187,30 @@ pulseSpeed: 2000,      // Milliseconds per pulse cycle
 
 ## API Reference Quick Guide
 
+### Backboard Proxy Integration
+
+`Main.js` now exports two helper methods:
+
+- `sendAssistantPrompt(content, options)`
+- `resetAssistantSession()`
+
+Use these methods from your interaction handlers to call your local backend proxy (`http://localhost:3000/api/backboard/message`) without exposing your Backboard API key in Lens assets.
+
+Example flow:
+
+1. Start your backend proxy from `api/`.
+2. Call `sendAssistantPrompt("Give me a futuristic UI tip")` when a panel is tapped.
+3. Read the assistant text from `result.response.content`.
+4. Keep using the returned `threadId` automatically through the built-in session state.
+5. Call `resetAssistantSession()` when you want to start a fresh conversation.
+
+Current default behavior:
+
+1. `Main.js` now automatically sends a prompt when a holographic panel is activated.
+2. Repeated taps while a request is active are ignored to prevent request flooding.
+3. If a scene object named `AssistantResponseText` exists, the assistant response is written there.
+4. If `AssistantResponseText` is missing, responses are still logged to Diagnostics.
+
 ### HolographicUIManager
 ```javascript
 manager.setGlowIntensity(1.5)     // 0.5-2.0

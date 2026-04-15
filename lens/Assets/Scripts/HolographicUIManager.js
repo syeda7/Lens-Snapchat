@@ -25,6 +25,7 @@ class HolographicUIManager {
         this.initialized = false;
         this.activePanels = new Set();
         this.animationDrivers = [];
+        this.panelTapHandler = null;
     }
 
     /**
@@ -76,8 +77,28 @@ class HolographicUIManager {
      */
     setupPanelInteraction(panel, index) {
         panel.onTap().subscribe(() => {
-            this.activatePanel(panel, index);
+            const wasActive = this.activePanels.has(index);
+            if (wasActive) {
+                this.deactivatePanel(panel, index);
+            } else {
+                this.activatePanel(panel, index);
+            }
+
+            if (this.panelTapHandler) {
+                this.panelTapHandler({
+                    index: index,
+                    panel: panel,
+                    isActive: !wasActive,
+                });
+            }
         });
+    }
+
+    /**
+     * Register a callback fired for every panel tap.
+     */
+    setPanelTapHandler(handler) {
+        this.panelTapHandler = typeof handler === "function" ? handler : null;
     }
 
     /**
